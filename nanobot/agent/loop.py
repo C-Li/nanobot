@@ -204,7 +204,7 @@ class AgentLoop:
                 break
 
         if final_content is None and iteration >= self.max_iterations:
-            final_content = f"⚠️ Maximum iteration limit reached ({self.max_iterations} iterations). Task incomplete. Please simplify your request or break it into smaller steps."
+            final_content = _('agent.max_iterations', count=self.max_iterations)
 
         return final_content, tools_used
 
@@ -229,7 +229,7 @@ class AgentLoop:
                     await self.bus.publish_outbound(OutboundMessage(
                         channel=msg.channel,
                         chat_id=msg.chat_id,
-                        content=f"Sorry, I encountered an error: {str(e)}"
+                        content=_('agent.error_processing', error=str(e))
                     ))
             except asyncio.TimeoutError:
                 continue
