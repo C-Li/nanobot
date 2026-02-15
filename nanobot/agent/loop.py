@@ -202,6 +202,9 @@ class AgentLoop:
                 final_content = response.content
                 break
 
+        if final_content is None and iteration >= self.max_iterations:
+            final_content = f"⚠️ Maximum iteration limit reached ({self.max_iterations} iterations). Task incomplete. Please simplify your request or break it into smaller steps."
+
         return final_content, tools_used
 
     async def run(self) -> None:
@@ -300,7 +303,7 @@ class AgentLoop:
         final_content, tools_used = await self._run_agent_loop(initial_messages)
 
         if final_content is None:
-            final_content = "I've completed processing but have no response to give."
+            final_content = "⚠️ LLM returned empty response. This may be due to content filtering or an unexpected model behavior. Please retry."
         
         preview = final_content[:120] + "..." if len(final_content) > 120 else final_content
         logger.info(f"Response to {msg.channel}:{msg.sender_id}: {preview}")
@@ -348,7 +351,7 @@ class AgentLoop:
         final_content, _ = await self._run_agent_loop(initial_messages)
 
         if final_content is None:
-            final_content = "Background task completed."
+            final_content = "⚠️ Background task: LLM returned empty response. Task may have been interrupted or filtered."
         
         session.add_message("user", f"[System: {msg.sender_id}] {msg.content}")
         session.add_message("assistant", final_content)
