@@ -75,6 +75,12 @@
       "not_set": "未设置"
     }
   },
+  "agent": {
+    "new_session": "新会话已开始。正在整理记忆...",
+    "help": "🐈 nanobot 命令：\n/new — 开始新对话\n/help — 显示可用命令",
+    "empty_response": "⚠️ 模型返回空响应。可能是内容过滤或模型异常，请重试。",
+    "empty_response_bg": "⚠️ 后台任务：模型返回空响应。任务可能被中断或过滤。"
+  },
   "tools": {
     "cron": {
       "name": "cron",

@@ -23,6 +23,7 @@ from nanobot.agent.tools.cron import CronTool
 from nanobot.agent.memory import MemoryStore
 from nanobot.agent.subagent import SubagentManager
 from nanobot.session.manager import Session, SessionManager
+from nanobot.i18n import _
 
 
 class AgentLoop:
@@ -271,7 +272,6 @@ class AgentLoop:
         # Handle slash commands
         cmd = msg.content.strip().lower()
         if cmd == "/new":
-            # Capture messages before clearing (avoid race condition with background task)
             messages_to_archive = session.messages.copy()
             session.clear()
             self.sessions.save(session)
@@ -284,10 +284,10 @@ class AgentLoop:
 
             asyncio.create_task(_consolidate_and_cleanup())
             return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id,
-                                  content="New session started. Memory consolidation in progress.")
+                                  content=_('agent.new_session'))
         if cmd == "/help":
             return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id,
-                                  content="🐈 nanobot commands:\n/new — Start a new conversation\n/help — Show available commands")
+                                  content=_('agent.help'))
         
         if len(session.messages) > self.memory_window:
             asyncio.create_task(self._consolidate_memory(session))
@@ -303,7 +303,7 @@ class AgentLoop:
         final_content, tools_used = await self._run_agent_loop(initial_messages)
 
         if final_content is None:
-            final_content = "⚠️ LLM returned empty response. This may be due to content filtering or an unexpected model behavior. Please retry."
+            final_content = _('agent.empty_response')
         
         preview = final_content[:120] + "..." if len(final_content) > 120 else final_content
         logger.info(f"Response to {msg.channel}:{msg.sender_id}: {preview}")
@@ -351,7 +351,7 @@ class AgentLoop:
         final_content, _ = await self._run_agent_loop(initial_messages)
 
         if final_content is None:
-            final_content = "⚠️ Background task: LLM returned empty response. Task may have been interrupted or filtered."
+            final_content = _('agent.empty_response_bg')
         
         session.add_message("user", f"[System: {msg.sender_id}] {msg.content}")
         session.add_message("assistant", final_content)

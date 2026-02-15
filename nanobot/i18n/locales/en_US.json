@@ -75,6 +75,12 @@
       "not_set": "not set"
     }
   },
+  "agent": {
+    "new_session": "New session started. Memory consolidation in progress.",
+    "help": "🐈 nanobot commands:\n/new — Start a new conversation\n/help — Show available commands",
+    "empty_response": "⚠️ LLM returned empty response. This may be due to content filtering or an unexpected model behavior. Please retry.",
+    "empty_response_bg": "⚠️ Background task: LLM returned empty response. Task may have been interrupted or filtered."
+  },
   "tools": {
     "cron": {
       "name": "cron",
