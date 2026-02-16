@@ -1,7 +1,9 @@
 """Agent loop: the core processing engine."""
 
 import asyncio
+from contextlib import AsyncExitStack
 import json
+import json_repair
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +23,7 @@ from nanobot.agent.tools.cron import CronTool
 from nanobot.agent.memory import MemoryStore
 from nanobot.agent.subagent import SubagentManager
 from nanobot.session.manager import Session, SessionManager
+from nanobot.i18n import _
 
 
 class AgentLoop:
@@ -50,6 +53,7 @@ class AgentLoop:
         cron_service: "CronService | None" = None,
         restrict_to_workspace: bool = False,
         session_manager: SessionManager | None = None,
+        mcp_servers: dict | None = None,
     ):
         from nanobot.config.schema import ExecToolConfig
         from nanobot.cron.service import CronService
@@ -82,6 +86,9 @@ class AgentLoop:
         )
         
         self._running = False
+        self._mcp_servers = mcp_servers or {}
+        self._mcp_stack: AsyncExitStack | None = None
+        self._mcp_connected = False
         self._register_default_tools()
     
     def _register_default_tools(self) -> None:
@@ -116,6 +123,16 @@ class AgentLoop:
         if self.cron_service:
             self.tools.register(CronTool(self.cron_service))
     
+    async def _connect_mcp(self) -> None:
+        """Connect to configured MCP servers (one-time, lazy)."""
+        if self._mcp_connected or not self._mcp_servers:
+            return
+        self._mcp_connected = True
+        from nanobot.agent.tools.mcp import connect_mcp_servers
+        self._mcp_stack = AsyncExitStack()
+        await self._mcp_stack.__aenter__()
+        await connect_mcp_servers(self._mcp_servers, self.tools, self._mcp_stack)
+
     def _set_tool_context(self, channel: str, chat_id: str) -> None:
         """Update context for all tools that need routing info."""
         if message_tool := self.tools.get("message"):
@@ -186,11 +203,15 @@ class AgentLoop:
                 final_content = response.content
                 break
 
+        if final_content is None and iteration >= self.max_iterations:
+            final_content = _('agent.max_iterations', count=self.max_iterations)
+
         return final_content, tools_used
 
     async def run(self) -> None:
         """Run the agent loop, processing messages from the bus."""
         self._running = True
+        await self._connect_mcp()
         logger.info("Agent loop started")
 
         while self._running:
@@ -208,11 +229,20 @@ class AgentLoop:
                     await self.bus.publish_outbound(OutboundMessage(
                         channel=msg.channel,
                         chat_id=msg.chat_id,
-                        content=f"Sorry, I encountered an error: {str(e)}"
+                        content=_('agent.error_processing', error=str(e))
                     ))
             except asyncio.TimeoutError:
                 continue
     
+    async def close_mcp(self) -> None:
+        """Close MCP connections."""
+        if self._mcp_stack:
+            try:
+                await self._mcp_stack.aclose()
+            except (RuntimeError, BaseExceptionGroup):
+                pass  # MCP SDK cancel scope cleanup is noisy but harmless
+            self._mcp_stack = None
+
     def stop(self) -> None:
         """Stop the agent loop."""
         self._running = False
@@ -242,7 +272,6 @@ class AgentLoop:
         # Handle slash commands
         cmd = msg.content.strip().lower()
         if cmd == "/new":
-            # Capture messages before clearing (avoid race condition with background task)
             messages_to_archive = session.messages.copy()
             session.clear()
             self.sessions.save(session)
@@ -255,10 +284,10 @@ class AgentLoop:
 
             asyncio.create_task(_consolidate_and_cleanup())
             return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id,
-                                  content="New session started. Memory consolidation in progress.")
+                                  content=_('agent.new_session'))
         if cmd == "/help":
             return OutboundMessage(channel=msg.channel, chat_id=msg.chat_id,
-                                  content="🐈 nanobot commands:\n/new — Start a new conversation\n/help — Show available commands")
+                                  content=_('agent.help'))
         
         if len(session.messages) > self.memory_window:
             asyncio.create_task(self._consolidate_memory(session))
@@ -274,7 +303,7 @@ class AgentLoop:
         final_content, tools_used = await self._run_agent_loop(initial_messages)
 
         if final_content is None:
-            final_content = "I've completed processing but have no response to give."
+            final_content = _('agent.empty_response')
         
         preview = final_content[:120] + "..." if len(final_content) > 120 else final_content
         logger.info(f"Response to {msg.channel}:{msg.sender_id}: {preview}")
@@ -322,7 +351,7 @@ class AgentLoop:
         final_content, _ = await self._run_agent_loop(initial_messages)
 
         if final_content is None:
-            final_content = "Background task completed."
+            final_content = _('agent.empty_response_bg')
         
         session.add_message("user", f"[System: {msg.sender_id}] {msg.content}")
         session.add_message("assistant", final_content)
@@ -395,9 +424,15 @@ Respond with ONLY valid JSON, no markdown fences."""
                 model=self.model,
             )
             text = (response.content or "").strip()
+            if not text:
+                logger.warning("Memory consolidation: LLM returned empty response, skipping")
+                return
             if text.startswith("```"):
                 text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
-            result = json.loads(text)
+            result = json_repair.loads(text)
+            if not isinstance(result, dict):
+                logger.warning(f"Memory consolidation: unexpected response type, skipping. Response: {text[:200]}")
+                return
 
             if entry := result.get("history_entry"):
                 memory.append_history(entry)
@@ -432,6 +467,7 @@ Respond with ONLY valid JSON, no markdown fences."""
         Returns:
             The agent's response.
         """
+        await self._connect_mcp()
         msg = InboundMessage(
             channel=channel,
             sender_id="user",

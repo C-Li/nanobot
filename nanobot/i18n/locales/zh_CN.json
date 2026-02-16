@@ -1,0 +1,192 @@
+{
+  "cli": {
+    "onboard": {
+      "config_exists": "配置文件已存在于 {path}",
+      "overwrite_y": "y = 使用默认值覆盖（现有值将丢失）",
+      "overwrite_n": "N = 刷新配置，保留现有值并添加新字段",
+      "overwrite_prompt": "是否覆盖？",
+      "config_reset": "配置已重置为默认值，位置：{path}",
+      "config_refreshed": "配置已刷新，位置：{path}（现有值已保留）",
+      "config_created": "已创建配置文件，位置：{path}",
+      "workspace_created": "已创建工作空间，位置：{path}",
+      "ready": "nanobot 已准备就绪！",
+      "next_steps": "下一步：",
+      "step1": "1. 在 ~/.nanobot/config.json 中添加您的 API 密钥",
+      "step1_link": "获取地址：https://openrouter.ai/keys",
+      "step2": "2. 开始对话：nanobot agent -m \"你好！\"",
+      "chat_apps": "想要使用 Telegram/WhatsApp？请查看：https://github.com/HKUDS/nanobot#-chat-apps",
+      "created_file": "已创建 {filename}"
+    },
+    "agent": {
+      "error_no_api_key": "错误：未配置 API 密钥。",
+      "set_api_key": "请在 ~/.nanobot/config.json 的 providers 部分设置",
+      "thinking": "nanobot 正在思考...",
+      "interactive_mode": "交互模式（输入 exit 或按 Ctrl+C 退出）",
+      "goodbye": "再见！"
+    },
+    "gateway": {
+      "starting": "正在启动 nanobot 网关，端口：{port}...",
+      "channels_enabled": "已启用频道：{channels}",
+      "no_channels": "警告：未启用任何频道",
+      "cron_jobs": "定时任务：{count} 个已计划任务",
+      "heartbeat": "心跳：每 30 分钟",
+      "shutting_down": "正在关闭..."
+    },
+    "channels": {
+      "title": "频道状态",
+      "channel": "频道",
+      "enabled": "已启用",
+      "configuration": "配置",
+      "not_configured": "未配置"
+    },
+    "whatsapp": {
+      "setting_up": "正在设置桥接...",
+      "installing_deps": "正在安装依赖...",
+      "building": "正在构建...",
+      "bridge_ready": "桥接已就绪",
+      "build_failed": "构建失败：{error}",
+      "starting": "正在启动桥接...",
+      "scan_qr": "扫描二维码以连接。",
+      "bridge_failed": "桥接失败：{error}",
+      "npm_not_found": "未找到 npm。请安装 Node.js >= 18。",
+      "bridge_not_found": "未找到桥接源码。",
+      "reinstall": "请尝试重新安装：pip install --force-reinstall nanobot"
+    },
+    "cron": {
+      "title": "定时任务",
+      "name": "名称",
+      "schedule": "计划",
+      "status": "状态",
+      "next_run": "下次运行",
+      "no_jobs": "没有定时任务。",
+      "error_schedule": "错误：必须指定 --every、--cron 或 --at",
+      "job_added": "已添加任务 '{name}'（{id}）",
+      "job_removed": "已移除任务 {id}",
+      "job_not_found": "未找到任务 {id}",
+      "job_status": "任务 '{name}' {status}",
+      "job_executed": "任务已执行",
+      "job_failed": "执行任务 {id} 失败"
+    },
+    "status": {
+      "title": "nanobot 状态",
+      "config": "配置",
+      "workspace": "工作空间",
+      "model": "模型",
+      "not_set": "未设置"
+    }
+  },
+  "agent": {
+    "new_session": "新会话已开始。正在整理记忆...",
+    "help": "🐈 nanobot 命令：\n/new — 开始新对话\n/help — 显示可用命令",
+    "empty_response": "⚠️ 模型返回空响应。可能是内容过滤或模型异常，请重试。",
+    "empty_response_bg": "⚠️ 后台任务：模型返回空响应。任务可能被中断或过滤。",
+    "max_iterations": "⚠️ 已达到最大迭代次数限制（{count} 次）。任务未完成。请简化请求或分解为更小的步骤。",
+    "error_processing": "抱歉，处理消息时遇到错误：{error}"
+  },
+  "tools": {
+    "cron": {
+      "name": "cron",
+      "description": "安排提醒和重复任务。操作：add（添加）、list（列出）、remove（移除）。",
+      "error_message_required": "错误：添加任务需要 message 参数",
+      "error_no_session": "错误：无会话上下文（channel/chat_id）",
+      "error_schedule_required": "错误：必须指定 every_seconds、cron_expr 或 at",
+      "no_jobs": "没有定时任务。",
+      "scheduled_jobs": "定时任务：",
+      "error_job_id_required": "错误：移除任务需要 job_id 参数"
+    },
+    "shell": {
+      "name": "exec",
+      "description": "执行 shell 命令并返回输出。请谨慎使用。",
+      "error_blocked_dangerous": "错误：命令被安全防护阻止（检测到危险模式）",
+      "error_blocked_allowlist": "错误：命令被安全防护阻止（不在允许列表中）",
+      "error_blocked_traversal": "错误：命令被安全防护阻止（检测到路径遍历）",
+      "error_blocked_outside": "错误：命令被安全防护阻止（路径在工作目录外）"
+    },
+    "filesystem": {
+      "read": {
+        "name": "read_file",
+        "description": "读取指定路径文件的内容。"
+      },
+      "write": {
+        "name": "write_file",
+        "description": "将内容写入指定路径的文件。如需要会创建父目录。"
+      },
+      "edit": {
+        "name": "edit_file",
+        "description": "通过将 old_text 替换为 new_text 来编辑文件。old_text 必须在文件中精确存在。"
+      },
+      "list": {
+        "name": "list_dir",
+        "description": "列出目录内容。"
+      }
+    },
+    "web": {
+      "error_no_api_key": "错误：未配置 BRAVE_API_KEY"
+    },
+    "message": {
+      "name": "message",
+      "description": "向用户发送消息。当您想要传达信息时使用此工具。",
+      "error_no_target": "错误：未指定目标频道/聊天",
+      "error_not_configured": "错误：消息发送未配置"
+    },
+    "spawn": {
+      "name": "spawn"
+    }
+  },
+  "channels": {
+    "telegram": {
+      "start": "启动机器人",
+      "new": "开始新对话",
+      "help": "显示可用命令",
+      "error_no_token": "未配置 Telegram 机器人令牌",
+      "connected": "Telegram 机器人 @{username} 已连接",
+      "not_running": "Telegram 机器人未运行",
+      "welcome": "发送消息给我，我会回复！"
+    },
+    "whatsapp": {
+      "connected": "已连接到 WhatsApp 桥接",
+      "not_connected": "WhatsApp 桥接未连接",
+      "scan_qr": "在桥接终端中扫描二维码以连接 WhatsApp"
+    },
+    "feishu": {
+      "error_no_sdk": "未安装飞书 SDK。请运行：pip install lark-oapi",
+      "error_no_config": "未配置飞书 app_id 和 app_secret",
+      "started": "飞书机器人已启动，使用 WebSocket 长连接",
+      "no_public_ip": "无需公网 IP - 使用 WebSocket 接收事件",
+      "stopped": "飞书机器人已停止",
+      "not_initialized": "飞书客户端未初始化"
+    },
+    "mochat": {
+      "error_no_token": "未配置 Mochat claw_token",
+      "error_missing_token": "Mochat claw_token 缺失，跳过发送",
+      "error_empty_target": "Mochat 发送目标为空",
+      "connected": "Mochat websocket 已连接",
+      "disconnected": "Mochat websocket 已断开",
+      "error_not_initialized": "Mochat HTTP 客户端未初始化"
+    },
+    "manager": {
+      "telegram_enabled": "Telegram 频道已启用",
+      "whatsapp_enabled": "WhatsApp 频道已启用",
+      "discord_enabled": "Discord 频道已启用",
+      "feishu_enabled": "飞书频道已启用",
+      "mochat_enabled": "Mochat 频道已启用",
+      "dingtalk_enabled": "钉钉频道已启用",
+      "email_enabled": "邮件频道已启用",
+      "slack_enabled": "Slack 频道已启用",
+      "no_channels": "未启用任何频道",
+      "stopped": "已停止 {name} 频道",
+      "dispatcher_started": "出站调度器已启动"
+    }
+  },
+  "common": {
+    "yes": "是",
+    "no": "否",
+    "enabled": "已启用",
+    "disabled": "已禁用",
+    "error": "错误",
+    "success": "成功",
+    "loading": "加载中...",
+    "cancel": "取消",
+    "confirm": "确认"
+  }
+}
