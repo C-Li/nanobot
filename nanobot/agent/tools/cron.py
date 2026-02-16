@@ -79,7 +79,7 @@ class CronTool(Tool):
             return self._list_jobs()
         elif action == "remove":
             return self._remove_job(job_id)
-        return f"Unknown action: {action}"
+        return _("tools.cron.error_action_required")
     
     def _add_job(self, message: str, every_seconds: int | None, cron_expr: str | None, at: str | None) -> str:
         if not message:
@@ -110,7 +110,7 @@ class CronTool(Tool):
             to=self._chat_id,
             delete_after_run=delete_after,
         )
-        return f"Created job '{job.name}' (id: {job.id})"
+        return _("tools.cron.job_created", name=job.name, id=job.id)
     
     def _list_jobs(self) -> str:
         jobs = self._cron.list_jobs()
@@ -123,5 +123,5 @@ class CronTool(Tool):
         if not job_id:
             return _("tools.cron.error_job_id_required")
         if self._cron.remove_job(job_id):
-            return f"Removed job {job_id}"
-        return f"Job {job_id} not found"
+            return _("tools.cron.job_removed", id=job_id)
+        return _("tools.cron.job_not_found", id=job_id)

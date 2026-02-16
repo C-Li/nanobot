@@ -82,7 +82,7 @@ class ExecTool(Tool):
                 )
             except asyncio.TimeoutError:
                 process.kill()
-                return f"Error: Command timed out after {self.timeout} seconds"
+                return _("tools.shell.error_timeout", timeout=self.timeout)
             
             output_parts = []
             
@@ -107,7 +107,7 @@ class ExecTool(Tool):
             return result
             
         except Exception as e:
-            return f"Error executing command: {str(e)}"
+            return _("tools.shell.error_executing", error=str(e))
 
     def _guard_command(self, command: str, cwd: str) -> str | None:
         """Best-effort safety guard for potentially destructive commands."""

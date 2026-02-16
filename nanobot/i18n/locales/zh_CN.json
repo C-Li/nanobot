@@ -72,7 +72,8 @@
       "config": "配置",
       "workspace": "工作空间",
       "model": "模型",
-      "not_set": "未设置"
+      "not_set": "未设置",
+      "api_base": "API 基础地址"
     }
   },
   "agent": {
@@ -87,12 +88,16 @@
     "cron": {
       "name": "cron",
       "description": "安排提醒和重复任务。操作：add（添加）、list（列出）、remove（移除）。",
+      "error_action_required": "错误：需要指定操作（add、list 或 remove）",
       "error_message_required": "错误：添加任务需要 message 参数",
       "error_no_session": "错误：无会话上下文（channel/chat_id）",
       "error_schedule_required": "错误：必须指定 every_seconds、cron_expr 或 at",
       "no_jobs": "没有定时任务。",
       "scheduled_jobs": "定时任务：",
-      "error_job_id_required": "错误：移除任务需要 job_id 参数"
+      "error_job_id_required": "错误：移除任务需要 job_id 参数",
+      "job_created": "已创建任务 '{name}'（id: {id}）",
+      "job_removed": "已移除任务 {id}",
+      "job_not_found": "未找到任务 {id}"
     },
     "shell": {
       "name": "exec",
@@ -100,7 +105,9 @@
       "error_blocked_dangerous": "错误：命令被安全防护阻止（检测到危险模式）",
       "error_blocked_allowlist": "错误：命令被安全防护阻止（不在允许列表中）",
       "error_blocked_traversal": "错误：命令被安全防护阻止（检测到路径遍历）",
-      "error_blocked_outside": "错误：命令被安全防护阻止（路径在工作目录外）"
+      "error_blocked_outside": "错误：命令被安全防护阻止（路径在工作目录外）",
+      "error_timeout": "错误：命令在 {timeout} 秒后超时",
+      "error_executing": "执行命令时出错：{error}"
     },
     "filesystem": {
       "read": {

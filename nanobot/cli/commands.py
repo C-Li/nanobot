@@ -499,7 +499,7 @@ def agent(
 
                         if _is_exit_command(command):
                             _restore_terminal()
-                            console.print("\nGoodbye!")
+                            console.print(f"\n{_('cli.agent.goodbye')}")
                             break
                         
                         with _thinking_ctx():

@@ -72,7 +72,8 @@
       "config": "Config",
       "workspace": "Workspace",
       "model": "Model",
-      "not_set": "not set"
+      "not_set": "not set",
+      "api_base": "API Base"
     }
   },
   "agent": {
@@ -87,12 +88,16 @@
     "cron": {
       "name": "cron",
       "description": "Schedule reminders and recurring tasks. Actions: add, list, remove.",
+      "error_action_required": "Error: action is required (add, list, or remove)",
       "error_message_required": "Error: message is required for add",
       "error_no_session": "Error: no session context (channel/chat_id)",
       "error_schedule_required": "Error: either every_seconds, cron_expr, or at is required",
       "no_jobs": "No scheduled jobs.",
       "scheduled_jobs": "Scheduled jobs:",
-      "error_job_id_required": "Error: job_id is required for remove"
+      "error_job_id_required": "Error: job_id is required for remove",
+      "job_created": "Created job '{name}' (id: {id})",
+      "job_removed": "Removed job {id}",
+      "job_not_found": "Job {id} not found"
     },
     "shell": {
       "name": "exec",
@@ -100,7 +105,9 @@
       "error_blocked_dangerous": "Error: Command blocked by safety guard (dangerous pattern detected)",
       "error_blocked_allowlist": "Error: Command blocked by safety guard (not in allowlist)",
       "error_blocked_traversal": "Error: Command blocked by safety guard (path traversal detected)",
-      "error_blocked_outside": "Error: Command blocked by safety guard (path outside working dir)"
+      "error_blocked_outside": "Error: Command blocked by safety guard (path outside working dir)",
+      "error_timeout": "Error: Command timed out after {timeout} seconds",
+      "error_executing": "Error executing command: {error}"
     },
     "filesystem": {
       "read": {
