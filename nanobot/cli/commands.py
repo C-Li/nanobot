@@ -509,14 +509,12 @@ def agent(
                         _restore_terminal()
                         console.print(f"\n{_('cli.agent.goodbye')}")
                         break
-                    except KeyboardInterrupt:
-                        _restore_terminal()
-                        console.print(f"\n{_('cli.agent.goodbye')}")
-                        break
                     except EOFError:
                         _restore_terminal()
                         console.print(f"\n{_('cli.agent.goodbye')}")
                         break
+            finally:
+                await agent_loop.close_mcp()
         
         asyncio.run(run_interactive())
 
